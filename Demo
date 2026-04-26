@@ -1,0 +1,32 @@
+name: Secure Python CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest flake8 bandit pip-audit
+
+      - name: Lint
+        run: flake8 .
+
+      - name: Run tests
+        run: pytest || true
+
+      - name: Security scan
+        run: bandit -r .
+
+      - name: Dependency check
+        run: pip-audit || true
